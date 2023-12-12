@@ -19,6 +19,33 @@ class Movie(object):
     def __repr__(self):
         return self.title
 
+class CarClient(object):
+    def __init__(self, api_key):
+        self.sess = requests.Session()
+        self.base_url = f"https://api.api-ninjas.com/v1/cars?model={api_key}"
+
+    def search(self, search_string):
+        resp = self.sess.get(self.base_url)
+
+        if resp.status_code != 200:
+            raise ValueError(
+                "Search request failed; make sure your API key is correct and authorized"
+            )
+
+        data = resp.json()
+
+        if data["Response"] == "False":
+            raise ValueError(f'[ERROR]: Error retrieving results: \'{data["Error"]}\' ')
+
+        search_results_json = data["Search"]
+        remaining_results = int(data["totalResults"])
+
+        for item_json in search_results_json:
+            result.append(Movie(item_json))
+            remaining_results -= len(search_results_json)
+
+        print(result)
+        result = []
 
 class MovieClient(object):
     def __init__(self, api_key):
@@ -96,12 +123,8 @@ class MovieClient(object):
 ## -- Example usage -- ###
 if __name__ == "__main__":
     import os
-
-    client = MovieClient(os.environ.get("OMDB_API_KEY"))
-
-    movies = client.search("guardians")
-
+    client = CarClient(os.environ.get("CAR_API_KEY"))
+    movies = client.search("camry")
     for movie in movies:
         print(movie)
-
     print(len(movies))
