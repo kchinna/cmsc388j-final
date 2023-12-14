@@ -17,7 +17,7 @@ from datetime import datetime
 import os
 
 # local
-from .client import MovieClient
+from .client import MovieClient, CarClient
 
 # update with your API Key
 OMDB_API_KEY = '172fd92b'
@@ -31,6 +31,7 @@ db = MongoEngine()
 login_manager = LoginManager()
 bcrypt = Bcrypt()
 movie_client = MovieClient(OMDB_API_KEY)
+car_client = CarClient(CAR_API_KEY)
 
 from .users.routes import users
 from .movies.routes import movies

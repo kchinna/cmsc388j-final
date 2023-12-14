@@ -1,5 +1,5 @@
 import requests
-
+import json
 
 class Movie(object):
     def __init__(self, omdb_json, detailed=False):
@@ -21,31 +21,39 @@ class Movie(object):
 
 class CarClient(object):
     def __init__(self, api_key):
+        self.api_key = api_key
         self.sess = requests.Session()
-        self.base_url = f"https://api.api-ninjas.com/v1/cars?model={api_key}"
+        self.base_url = "https://api.api-ninjas.com/v1/cars?make="
 
+    # API Option #1
+    # def search(self, search_string):
+    #     resp = self.sess.get(self.base_url + search_string, headers={'X-Api-Key': self.api_key})
+
+    #     if resp.status_code != 200:
+    #         raise ValueError(
+    #             "Search request failed; make sure your API key is correct and authorized"
+    #         )
+
+    #     data = resp.json()
+    #     print(json.dumps(data, indent=2))
+
+    #     if len(data) == 0:
+    #         raise ValueError(f'[ERROR]: Error retrieving results: \'{data["Error"]}\' ')
+
+    #     result = data
+    #     return result
+
+    # API Option #2
     def search(self, search_string):
-        resp = self.sess.get(self.base_url)
+        url = f"https://vpic.nhtsa.dot.gov/api/vehicles/GetModelsForMake/{search_string}?format=json"
+        resp = self.sess.get(url)
 
         if resp.status_code != 200:
             raise ValueError(
                 "Search request failed; make sure your API key is correct and authorized"
             )
-
-        data = resp.json()
-
-        if data["Response"] == "False":
-            raise ValueError(f'[ERROR]: Error retrieving results: \'{data["Error"]}\' ')
-
-        search_results_json = data["Search"]
-        remaining_results = int(data["totalResults"])
-
-        for item_json in search_results_json:
-            result.append(Movie(item_json))
-            remaining_results -= len(search_results_json)
-
-        print(result)
-        result = []
+        
+        return resp.json()["Results"]
 
 class MovieClient(object):
     def __init__(self, api_key):

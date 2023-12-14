@@ -3,7 +3,7 @@ from io import BytesIO
 from flask import Blueprint, render_template, url_for, redirect, request, flash
 from flask_login import current_user
 
-from .. import movie_client
+from .. import movie_client, car_client
 from ..forms import MovieReviewForm, SearchForm
 from ..models import User, Review
 from ..utils import current_time
@@ -32,7 +32,8 @@ def index():
 @movies.route("/search-results/<query>", methods=["GET"])
 def query_results(query):
     try:
-        results = movie_client.search(query)
+        # results = movie_client.search(query)
+        results = car_client.search(query)
     except ValueError as e:
         return render_template("query.html", error_msg=str(e))
 
