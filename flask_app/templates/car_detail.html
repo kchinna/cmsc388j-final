@@ -15,12 +15,48 @@
         {{ car.Make_Name }} ({{ car.Model_Name }})
       </div>
       <div class="card-body">
-        <ul class="list-group list-group-flush">
-        </ul>
+        <img src="https://www.motorbiscuit.com/wp-content/uploads/2022/12/Chrysler-Airflow-concept.jpg?strip=all&quality=89" class="mr-3 movie" alt="alt text">
       </div>
     </div>
   </div>
 </div>
+
+{# Rating #}
+<div class="row">
+  <div class="col-md-12">
+    <h1> Rating <small class="float-right">{{ ratings|length }} ratings</small></h1>
+    <ul class="media-list">
+      <p>
+        {{ rating }} Stars
+      </p>
+    </ul>
+  </div>
+</div>
+
+{% if current_user.is_authenticated %}
+{# Rating submission form #}
+<div class="row">
+  <div class="col">
+    <form method="POST" action="">
+      {{ rate_form.csrf_token }}
+      <div class="form-group">
+        {{ rate_form.rating.label }}
+        {{ rate_form.rating(class="form-control") }}
+
+        {% if rate_form.rating.errors %}
+        <div class="alert alert-warning" role="alert">
+          {% for error in form.text.errors %}
+          <span>{{ error }}</span>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+      </div>
+      {{ rate_form.submit() }}
+    </form>
+  </div>
+</div>
+{% endif %}
 
 {# Reviews #}
 <div class="row">

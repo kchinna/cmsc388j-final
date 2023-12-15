@@ -3,7 +3,7 @@ from flask_login import current_user
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileRequired, FileAllowed
 from werkzeug.utils import secure_filename
-from wtforms import StringField, SubmitField, TextAreaField, PasswordField
+from wtforms import StringField, SubmitField, TextAreaField, PasswordField, SelectField
 from wtforms.validators import (
     InputRequired,
     Length,
@@ -28,6 +28,12 @@ class MovieReviewForm(FlaskForm):
         "Comment", validators=[InputRequired(), Length(min=5, max=500)]
     )
     submit = SubmitField("Enter Comment")
+
+
+class CarRatingForm(FlaskForm):
+    rating = SelectField("Rating", choices=[(1, '1 star'), (2, '2 star'), (3, '3 star'), (4, '4 star'), (5, '5 star')],
+                         coerce=int, validators=[InputRequired()])
+    submit = SubmitField("Enter Rating")
 
 
 class RegistrationForm(FlaskForm):

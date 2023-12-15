@@ -4,8 +4,8 @@ from flask import Blueprint, render_template, url_for, redirect, request, flash
 from flask_login import current_user
 
 from .. import movie_client, car_client
-from ..forms import MovieReviewForm, SearchForm
-from ..models import User, Review
+from ..forms import MovieReviewForm, SearchForm, CarRatingForm
+from ..models import User, Review, Rating
 from ..utils import current_time
 
 movies = Blueprint("movies", __name__)
@@ -66,9 +66,33 @@ def car_detail(make, model_id):
         )
         review.save()
         return redirect(request.path)
+
+    rate_form = CarRatingForm()
+    if rate_form.validate_on_submit():
+        ratings = Rating.objects(rater=current_user._get_current_object(), model_id=model_id, make=make)
+        # Can only rate once, won't count otherwise
+        if len(ratings) == 0:
+            rating = Rating(
+                rater=current_user._get_current_object(),
+                rating=rate_form.rating.data,
+                model_id=model_id,
+                make=make
+            )
+            rating.save()
+        return redirect(request.path)
+    
+    ratings = Rating.objects(model_id=model_id, make=make)
+    total = 0
+    length = 0
+    for r in ratings:
+        total += r.rating
+        length += 1
+    car_rating = 0 if length == 0 else total / length
+    print(car_rating)
     
     reviews = Review.objects(imdb_id=model_id)
-    return render_template("car_detail.html", form=form, car=result, reviews=reviews)
+    return render_template("car_detail.html", form=form, rate_form=rate_form, car=result, reviews=reviews, ratings=ratings, rating=car_rating)
+
 
 @movies.route("/movies/<movie_id>", methods=["GET", "POST"])
 def movie_detail(movie_id):
