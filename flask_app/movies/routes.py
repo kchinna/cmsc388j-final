@@ -40,6 +40,36 @@ def query_results(query):
     return render_template("query.html", results=results)
 
 
+@movies.route("/cars/<make>/<model_id>", methods=["GET", "POST"])
+def car_detail(make, model_id):
+    try:
+        models = car_client.search(make)
+        result = None
+        for m in models:
+            print(type(m["Model_ID"]))
+            if m["Model_ID"] == int(model_id):
+                result = m
+                break
+        if result == None:
+            return render_template("car_detail.html", error_msg="Could not find model for make")
+    except ValueError as e:
+        return render_template("car_detail.html", error_msg=str(e))
+    
+    form = MovieReviewForm()
+    if form.validate_on_submit():
+        review = Review(
+            commenter=current_user._get_current_object(),
+            content=form.text.data,
+            date=current_time(),
+            imdb_id=model_id,
+            movie_title=make
+        )
+        review.save()
+        return redirect(request.path)
+    
+    reviews = Review.objects(imdb_id=model_id)
+    return render_template("car_detail.html", form=form, car=result, reviews=reviews)
+
 @movies.route("/movies/<movie_id>", methods=["GET", "POST"])
 def movie_detail(movie_id):
     try:

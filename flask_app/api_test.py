@@ -15,5 +15,4 @@ import requests, json
 url = 'https://vpic.nhtsa.dot.gov/api/vehicles/GetModelsForMake/honda?format=json'
 r = requests.get(url)
 data = r.json()["Results"]
-print(r.json()["fdsf"])
 print(json.dumps(data[0], indent=2))
