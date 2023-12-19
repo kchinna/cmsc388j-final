@@ -4,7 +4,7 @@ from flask import Blueprint, render_template, url_for, redirect, request, flash
 from flask_login import current_user
 
 from .. import movie_client, car_client
-from ..forms import MovieReviewForm, SearchForm, CarRatingForm
+from ..forms import CarReviewForm, SearchForm, CarRatingForm
 from ..models import User, Review, Rating
 from ..utils import current_time
 
@@ -55,7 +55,7 @@ def car_detail(make, model_id):
     except ValueError as e:
         return render_template("car_detail.html", error_msg=str(e))
     
-    form = MovieReviewForm()
+    form = CarReviewForm()
     if form.validate_on_submit():
         img = get_b64_img(current_user.username)
         review = Review(
